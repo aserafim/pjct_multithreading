@@ -62,19 +62,31 @@ func getFromViaCep(ch chan ViaCEP, cep string) {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Erro ao ler resposta: %v\n", err)
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+		} else {
+			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
+		}
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+		} else {
+			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
+		}
 	}
 
 	var data ViaCEP
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Erro ao fazer parse da resposta: %v\n", err)
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+		} else {
+			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
+		}
 	}
 
 	ch <- data
@@ -97,20 +109,29 @@ func getFromBrasilApi(ch chan BrasilApiCep, cep string) {
 	}
 
 	res, err := http.DefaultClient.Do(req)
-	if err != nil {
+	if ctx.Err() == context.DeadlineExceeded {
+		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+	} else {
+
 		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Não foi possível ler a resposta.")
+	if ctx.Err() == context.DeadlineExceeded {
+		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+	} else {
+
+		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
 	}
 
 	var data BrasilApiCep
 	err = json.Unmarshal(body, &data)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Não foi possível processar a resposta.")
+	if ctx.Err() == context.DeadlineExceeded {
+		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+	} else {
+
+		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
 	}
 	//	time.Sleep(time.Second * 10)
 
