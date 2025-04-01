@@ -1,12 +1,23 @@
 # pjct_multithreading
-Utlizando Multithreading e APIs para buscar o resultado mais rápido entre duas APIs distintas.
 
-How To
+Utilizando **Multithreading** e **APIs** para buscar o resultado mais rápido entre duas APIs distintas.
+
+## Como executar
+
+```sh
 go run cep
+```
 
-Ex.:
+### Exemplo:
+
+```sh
 go run 01001001
+```
 
-Resultado:
-Endereço: Praça da Sé Sé 01001-001 São Paulo SP
-Recebido de ViaCep 
+### Resultado esperado:
+
+```
+Endereço: Praça da Sé, Sé, 01001-001, São Paulo, SP
+Recebido de: ViaCep
+```
+
