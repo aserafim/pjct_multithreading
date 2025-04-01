@@ -50,43 +50,49 @@ func getFromViaCep(ch chan ViaCEP, cep string) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://viacep.com.br/ws/"+cep+"/json/", nil)
 
-	//teste, erro := http.Get("http://viacep.com.br/ws/" + cep + "/json/")
-
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
 		} else {
 			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
 		}
+		ch <- ViaCEP{}
+		return
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
 		} else {
 			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
 		}
+		ch <- ViaCEP{}
+		return
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
 		} else {
 			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
 		}
+		ch <- ViaCEP{}
+		return
 	}
 
 	var data ViaCEP
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
 		} else {
 			fmt.Fprintf(os.Stderr, "Erro ao fazer requisição, %v\n", err)
 		}
+		ch <- ViaCEP{}
+		return
 	}
 
 	ch <- data
@@ -101,39 +107,56 @@ func getFromBrasilApi(ch chan BrasilApiCep, cep string) {
 
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
 		} else {
 
 			fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
 		}
+
+		ch <- BrasilApiCep{}
+		return
 	}
 
 	res, err := http.DefaultClient.Do(req)
-	if ctx.Err() == context.DeadlineExceeded {
-		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
-	} else {
+	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
+		} else {
 
-		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+			fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+		}
+
+		ch <- BrasilApiCep{}
+		return
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
-	if ctx.Err() == context.DeadlineExceeded {
-		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
-	} else {
+	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
+		} else {
 
-		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+			fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+		}
+
+		ch <- BrasilApiCep{}
+		return
 	}
 
 	var data BrasilApiCep
 	err = json.Unmarshal(body, &data)
-	if ctx.Err() == context.DeadlineExceeded {
-		fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido")
-	} else {
+	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			fmt.Fprintf(os.Stderr, "Timeout: o tempo limite foi excedido\n")
+		} else {
 
-		fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+			fmt.Fprintf(os.Stderr, "Erro ao processar requisição, %v\n", err)
+		}
+
+		ch <- BrasilApiCep{}
+		return
 	}
-	//	time.Sleep(time.Second * 10)
 
 	ch <- data
 }
